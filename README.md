@@ -7,6 +7,7 @@ This project is built for the exact workflow discussed here:
 - parse `大模型专家名单提取.html`
 - convert direct `x.com/<handle>` links into `rsshub://twitter/user/<handle>`
 - call Folo's real subscription API
+- optionally drive the Folo UI in browser mode
 - persist state for resume
 - export unresolved names that still need manual X handle mapping
 
@@ -23,6 +24,7 @@ Chinese documentation:
 - Saves progress after every item
 - Stops immediately when the Folo account hits the RSSHub subscription quota
 - Exports a clean unresolved-handle list for the remaining ambiguous names
+- Supports both `api` mode and `browser` mode
 
 ## What This Tool Does Not Do
 
@@ -82,6 +84,12 @@ Or:
 npm run follow
 ```
 
+Browser mode:
+
+```bash
+npm run follow:browser
+```
+
 Or with explicit CLI flags:
 
 ```bash
@@ -104,10 +112,22 @@ Run the whole batch:
 npm run follow
 ```
 
+Run in browser mode:
+
+```bash
+npm run follow:browser
+```
+
 Run a single target:
 
 ```bash
 node ./bin/auto-folo.js run --target-name "Sam Altman"
+```
+
+Run a single target in browser mode:
+
+```bash
+node ./bin/auto-folo.js run --mode browser --target-name "Sam Altman"
 ```
 
 Retry everything from scratch:
@@ -225,6 +245,20 @@ This tool is intentionally conservative:
 - Folo quota errors are surfaced exactly as returned by the platform
 
 That tradeoff is deliberate because correctness matters more than pretending to subscribe successfully.
+
+## Browser Mode
+
+Browser mode is for users who explicitly want real UI automation.
+
+It will:
+
+1. open Folo Discover
+2. fill the form with the exact RSSHub route
+3. click `Search`
+4. click the visible `Follow`
+5. click the orange confirmation `Follow`
+
+Use it when you want strict button-click behavior. Keep using `api` mode when you want the most stable batch execution.
 
 ## License
 

@@ -15,6 +15,7 @@
 - 解析本地 HTML，提取 `姓名 -> x.com 链接`
 - 对 `https://x.com/<handle>` 这种直接主页链接，自动转换为 `rsshub://twitter/user/<handle>`
 - 直接调用 Folo 的真实订阅接口
+- 支持浏览器模式，真的打开 Folo 页面并点击 Follow
 - 每处理一个人都写入状态，支持断点续跑
 - 自动导出“无法解析句柄”的清单
 - 遇到 Folo 的 RSSHub 配额限制时，明确停止并报告原因
@@ -75,6 +76,12 @@ run.bat
 npm run follow
 ```
 
+浏览器模式：
+
+```bash
+npm run follow:browser
+```
+
 ### 4. 查看报告
 
 ```bash
@@ -108,6 +115,24 @@ MAX_RSSHUB_SUBSCRIPTIONS exceeded
 ```
 
 说明不是脚本问题，而是你当前账号的 RSSHub 配额已满。
+
+## 浏览器模式
+
+如果你明确希望“真的在 Folo 页面里点按钮”，可以使用：
+
+```bash
+node ./bin/auto-folo.js run --mode browser
+```
+
+浏览器模式会：
+
+1. 打开 Folo Discover 页面
+2. 输入精确 RSSHub 路径
+3. 点击 `Search`
+4. 点击结果里的 `Follow`
+5. 点击确认弹窗中的橙色 `Follow`
+
+这个模式是真正的 UI 点击，但它依然不能绕过配额限制，也依然需要真实的 X 句柄。
 
 ## 示例文件
 

@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { createBrowserSession, createSubscriptionInBrowser } = require("./browser");
 const { ensureDir, readJson } = require("./fs-utils");
 const { createSubscription } = require("./folo-api");
 const { writeReports } = require("./report");
@@ -18,6 +19,9 @@ function validateConfig(config) {
   }
   if (!config.cookieString) {
     throw new Error("Missing FOLO_COOKIE_STRING. Set it in .env or pass --cookie.");
+  }
+  if (!["api", "browser"].includes(config.mode)) {
+    throw new Error(`Unsupported mode: ${config.mode}. Use "api" or "browser".`);
   }
 }
 
@@ -57,39 +61,55 @@ async function runBatch(config) {
   const handleOverrides = loadHandleOverrides(config.paths.handleOverridesPath);
   const state = loadRunState(config.paths.statePath);
   const results = [];
+  const browserSession = config.mode === "browser" ? await createBrowserSession(config) : null;
 
   let processed = 0;
-  for (const target of targets) {
-    const prior = state.done[target.name];
-    const successStatuses = new Set(["subscribed", "already-followed"]);
-    if (!config.forceRecheck && prior && successStatuses.has(prior.status)) {
-      results.push({ ...prior, skipped: true });
-      continue;
-    }
-
-    if (config.limit && processed >= config.limit) break;
-
-    try {
-      const subscription = await createSubscription(target, {
-        cookieString: config.cookieString,
-        handleOverrides,
-      });
-      const result = makeSuccessResult(target, subscription);
-      state.done[target.name] = result;
-      results.push(result);
-      saveRunState(config.paths.statePath, state);
-      processed += 1;
-      console.log(`SUBSCRIBED: ${target.name} -> ${subscription.subscriptionUrl}`);
-    } catch (error) {
-      const result = makeErrorResult(target, error);
-      state.done[target.name] = result;
-      results.push(result);
-      saveRunState(config.paths.statePath, state);
-      processed += 1;
-      console.error(`ERROR: ${target.name} -> ${error.message}`);
-      if (result.status === "quota-exceeded" && config.stopOnQuota) {
-        break;
+  try {
+    for (const target of targets) {
+      const prior = state.done[target.name];
+      const successStatuses = new Set(["subscribed", "already-followed"]);
+      if (!config.forceRecheck && prior && successStatuses.has(prior.status)) {
+        results.push({ ...prior, skipped: true });
+        continue;
       }
+
+      if (config.limit && processed >= config.limit) break;
+
+      try {
+        const subscription =
+          config.mode === "browser"
+            ? await createSubscriptionInBrowser(target, {
+                page: browserSession.page,
+                handleOverrides,
+              })
+            : await createSubscription(target, {
+                cookieString: config.cookieString,
+                handleOverrides,
+              });
+        const result = makeSuccessResult(target, subscription);
+        if (subscription.alreadyFollowed) {
+          result.status = "already-followed";
+        }
+        state.done[target.name] = result;
+        results.push(result);
+        saveRunState(config.paths.statePath, state);
+        processed += 1;
+        console.log(`SUBSCRIBED: ${target.name} -> ${subscription.subscriptionUrl}`);
+      } catch (error) {
+        const result = makeErrorResult(target, error);
+        state.done[target.name] = result;
+        results.push(result);
+        saveRunState(config.paths.statePath, state);
+        processed += 1;
+        console.error(`ERROR: ${target.name} -> ${error.message}`);
+        if (result.status === "quota-exceeded" && config.stopOnQuota) {
+          break;
+        }
+      }
+    }
+  } finally {
+    if (browserSession) {
+      await browserSession.context.close();
     }
   }
 
@@ -104,4 +124,3 @@ async function runBatch(config) {
 module.exports = {
   runBatch,
 };
-

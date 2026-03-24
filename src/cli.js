@@ -8,16 +8,18 @@ function printUsage() {
   console.log(`auto-folo
 
 Commands:
-  auto-folo run [--input path] [--target-name "Name"] [--limit 10] [--force-recheck]
+  auto-folo run [--input path] [--mode api|browser] [--target-name "Name"] [--limit 10] [--force-recheck]
   auto-folo report
 
 Options:
   --input PATH           Path to the exported HTML file
   --cookie STRING        Folo cookie string. Prefer FOLO_COOKIE_STRING in .env
+  --mode MODE            api or browser. Default: api
   --target-name NAME     Only process one person
   --limit N              Only process the first N matching items
   --force-recheck        Retry even if the target already succeeded before
   --stop-on-quota        Stop immediately when Folo quota is hit (default: true)
+  --headless             Run browser mode headless
 `);
 }
 
@@ -53,4 +55,3 @@ async function runCli() {
 module.exports = {
   runCli,
 };
-

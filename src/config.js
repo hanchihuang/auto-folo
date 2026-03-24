@@ -66,6 +66,7 @@ function resolveProjectPaths(projectRoot, overrides = {}) {
     envPath: overrides.envPath || path.join(projectRoot, ".env"),
     outputDir,
     artifactsDir,
+    browserProfileDir: path.join(outputDir, "browser-profile"),
     statePath: path.join(outputDir, "run-state.json"),
     resultPath: path.join(artifactsDir, "run-result.json"),
     unresolvedPath: path.join(artifactsDir, "unresolved-handles.json"),
@@ -86,10 +87,12 @@ function buildConfig(command, argv, projectRoot) {
     paths,
     inputHtml: args.input || env.INPUT_HTML || "",
     cookieString: args.cookie || env.FOLO_COOKIE_STRING || "",
+    mode: String(args.mode || env.MODE || "api").trim().toLowerCase(),
     targetName: args["target-name"] || env.TARGET_NAME || "",
     limit: toNumber(args.limit || env.LIMIT, null),
     forceRecheck: toBoolean(args["force-recheck"] ?? env.FORCE_RECHECK, false),
     stopOnQuota: toBoolean(args["stop-on-quota"] ?? env.STOP_ON_QUOTA, true),
+    headless: toBoolean(args.headless ?? env.HEADLESS, false),
   };
 }
 
@@ -101,4 +104,3 @@ module.exports = {
   toBoolean,
   toNumber,
 };
-

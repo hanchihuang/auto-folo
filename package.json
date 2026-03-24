@@ -8,6 +8,7 @@
   },
   "scripts": {
     "follow": "node ./bin/auto-folo.js run",
+    "follow:browser": "node ./bin/auto-folo.js run --mode browser",
     "report": "node ./bin/auto-folo.js report",
     "test": "node --test"
   },
@@ -21,5 +22,8 @@
     "rsshub",
     "x.com"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.58.2"
+  }
 }
