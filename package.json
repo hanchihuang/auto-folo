@@ -1,0 +1,25 @@
+{
+  "name": "auto-folo",
+  "version": "1.0.0",
+  "description": "Batch subscribe Folo feeds from an HTML expert list.",
+  "type": "commonjs",
+  "bin": {
+    "auto-folo": "./bin/auto-folo.js"
+  },
+  "scripts": {
+    "follow": "node ./bin/auto-folo.js run",
+    "report": "node ./bin/auto-folo.js report",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "folo",
+    "rss",
+    "automation",
+    "rsshub",
+    "x.com"
+  ],
+  "license": "MIT"
+}
