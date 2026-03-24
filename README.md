@@ -12,6 +12,9 @@ This project is built for the exact workflow discussed here:
 
 It is packaged as a normal CLI project so another user can clone it and run it directly.
 
+Chinese documentation:
+[README.zh-CN.md](/home/user/图片/auto-folo/README.zh-CN.md)
+
 ## What This Tool Does
 
 - Reads a local HTML file and extracts `"Name": "https://x.com/..."` pairs
@@ -60,6 +63,20 @@ STOP_ON_QUOTA=1
 ```
 
 ### 3. Run the batch subscription
+
+Linux / macOS:
+
+```bash
+./run.sh
+```
+
+Windows:
+
+```bat
+run.bat
+```
+
+Or:
 
 ```bash
 npm run follow
@@ -139,6 +156,11 @@ Key runtime outputs:
   Stores names that still point to `x.com/search?...` and need a real handle.
 - `output/artifacts/summary.json`
   Stores a machine-readable run summary.
+
+Example files:
+
+- [examples/input.sample.html](/home/user/图片/auto-folo/examples/input.sample.html)
+- [examples/handle_overrides.example.json](/home/user/图片/auto-folo/examples/handle_overrides.example.json)
 
 ## Handling Unresolved Search Links
 
